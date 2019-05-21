@@ -11,13 +11,16 @@ from blog.builder import BlogBuilder
       'account': 'the account of the blogs to download',
       'tag': 'the tag of the blogs to download',
       'days': 'the posts in recent days to fetch',
-      'debug': 'enable the debug mode'
+      'debug': 'enable the debug mode',
+      'clean': 'clean previous posts before download'
       })
-def download(ctx, account=None, tag=None, days=None, debug=False):
+def download(ctx, account=None, tag=None, days=None, debug=False, clean=False):
     """ download the posts to local by the account """
 
     if debug:
-      settings.set_debug_mode()
+        settings.set_debug_mode()
+    if clean:
+        clean(ctx)
 
     settings.set_steem_node()
 
@@ -54,7 +57,7 @@ def build_all(ctx):
 
     accounts = settings.get_env_var("STEEM_ACCOUNTS") or []
     if accounts and len(accounts) > 0:
-        for account in accounts:
+        for account in accounts.split(","):
             clean(ctx)
             download(ctx, account)
             build(ctx)

@@ -113,3 +113,7 @@ public/
 .deploy*/
 .vscode/
 source/
+
+# steemblog
+_config.yml
+_config.theme.yml

@@ -89,7 +89,7 @@ class BlogBuilder(SteemReader):
         a = SteemAccount(self.account)
         author = self.account
         name = a.get_profile("name") or ""
-        about = a.get_profile("about") or ""
+        # about = a.get_profile("about") or ""
         location = a.get_profile("location") or ""
         avatar = a.get_profile("profile_image") or ""
         website = a.get_profile("website") or ""
@@ -98,18 +98,18 @@ class BlogBuilder(SteemReader):
         template = get_message("config")
         config = template.format(organization=organization, language=language,
                                  name=name, author=author)
-        with open(CONFIG_FILE, "w", encoding="utf-8") as f:
+        filename = CONFIG_FILE
+        with open(filename, "w", encoding="utf-8") as f:
             f.write(config)
-        logger.info("{} file has been updated for the account {}".format(CONFIG_FILE, author))
+        logger.info("{} file has been updated for the account @{}".format(filename, author))
 
-        # build config file with template
+        # build config theme file with template
         template = get_message("config.theme")
         config = template.format(organization=organization,
                                  favicon=favicon, logo=logo,
-                                 author=author, about=about, location=location,
+                                 author=author, name=name, location=location,
                                  avatar=avatar, website=website)
-        with open(CONFIG_THEME_FILE, "w", encoding="utf-8") as f:
+        filename = CONFIG_THEME_FILE
+        with open(filename, "w", encoding="utf-8") as f:
             f.write(config)
-        logger.info("{} file has been updated for the account {}".format(CONFIG_FILE, author))
-
-
+        logger.info("{} file has been updated for the account @{}".format(filename, author))

@@ -270,7 +270,7 @@ widgets:
         # Author name to be shown in the profile widget
         author: {author}
         # Title of the author to be shown in the profile widget
-        author_title: {about}
+        author_title: {name}
         # Author's current location to be shown in the profile widget
         location: {location}
         # Path or URL to the avatar to be shown in the profile widget
