@@ -40,6 +40,8 @@ To see the introduction of a command, run `pipenv run invoke -h <command>`.
 
 To use the blog service, we simply add your steem account name to the STEEM_ACCOUNTS variable of this project's Travis CI job, then the synchronization will be done daily automatically.
 
+You may contact [@robertyan](https://busy.org/@robertyan) if you need help to setup the service in steemblog.
+
 
 ### Reference
 
