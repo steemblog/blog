@@ -26,7 +26,16 @@ def download(ctx, account=None, tag=None, days=None, debug=False):
     days = days or settings.get_env_var("DURATION")
 
     builder = BlogBuilder(account=account, tag=tag, days=days)
+    builder.update_config()
     builder.download()
+
+
+@task(help={
+      })
+def clean(ctx):
+    """ clean the downloaded posts """
+
+    os.system("rm -rf source/_posts")
 
 
 @task(help={
@@ -36,6 +45,19 @@ def build(ctx):
 
     os.system("cp -f _config.theme.yml themes/icarus/_config.yml")
     os.system("hexo generate")
+
+
+@task(help={
+      })
+def build_all(ctx):
+    """ download the posts of all the accounts, and generate pages """
+
+    accounts = settings.get_env_var("STEEM_ACCOUNTS") or []
+    if accounts and len(accounts) > 0:
+        for account in accounts:
+            clean(ctx)
+            download(ctx, account)
+            build(ctx)
 
 
 @task(help={

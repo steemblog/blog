@@ -3,12 +3,20 @@
 import os
 
 from steem.comment import SteemComment
+from steem.account import SteemAccount
 from steem.settings import settings, STEEM_HOST
 from data.reader import SteemReader
 from utils.logging.logger import logger
 from blog.message import get_message
 
 BLOG_CONTENT_FOLDER = "./source/_posts"
+
+BLOG_ORGANIZATION = "steemblog"
+BLOG_AVATAR = "https://avatars0.githubusercontent.com/u/50857551?s=200&v=4"
+BLOG_FAVICON = "https://www.easyicon.net/api/resizeApi.php?id=1185564&size=32"
+
+CONFIG_FILE = "_config.yml"
+CONFIG_THEME_FILE = "_config.theme.yml"
 
 
 class BlogBuilder(SteemReader):
@@ -50,7 +58,7 @@ class BlogBuilder(SteemReader):
         url = c.get_url()
 
         # build content with template
-        template = get_message("blog")
+        template = get_message("blog", footer=True)
         content = template.format(title=title, date=date, tags=tags, category=category, thumbnail=thumbnail, body=body, url=url)
 
         # write into MD files
@@ -68,7 +76,40 @@ class BlogBuilder(SteemReader):
             for post in self.posts:
                 self._write_content(post)
 
+    def update_config(self):
+        if not self.account:
+            return
 
+        organization = BLOG_ORGANIZATION
+        logo = BLOG_AVATAR
+        favicon = BLOG_FAVICON
 
+        language = settings.get_env_var("LANGUAGE") or "en"
+
+        a = SteemAccount(self.account)
+        author = self.account
+        name = a.get_profile("name") or ""
+        about = a.get_profile("about") or ""
+        location = a.get_profile("location") or ""
+        avatar = a.get_profile("profile_image") or ""
+        website = a.get_profile("website") or ""
+
+        # build config file with template
+        template = get_message("config")
+        config = template.format(organization=organization, language=language,
+                                 name=name, author=author)
+        with open(CONFIG_FILE, "w", encoding="utf-8") as f:
+            f.write(config)
+        logger.info("{} file has been updated for the account {}".format(CONFIG_FILE, author))
+
+        # build config file with template
+        template = get_message("config.theme")
+        config = template.format(organization=organization,
+                                 favicon=favicon, logo=logo,
+                                 author=author, about=about, location=location,
+                                 avatar=avatar, website=website)
+        with open(CONFIG_THEME_FILE, "w", encoding="utf-8") as f:
+            f.write(config)
+        logger.info("{} file has been updated for the account {}".format(CONFIG_FILE, author))
 
 
