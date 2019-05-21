@@ -15,6 +15,13 @@ Image Source: [Pixabay](https://cdn.pixabay.com/photo/2015/06/01/09/04/blog-7930
 You can find my blog from [https://steemblog.github.io/@robertyan](https://steemblog.github.io/@robertyan) as an example.
 
 
+### How to Sync Your Blogs
+
+To use the blog service, we simply add your steem account name to the STEEM_ACCOUNTS variable of this project's Travis CI job, then the synchronization will be done daily automatically.
+
+You may contact [@robertyan](https://busy.org/@robertyan) if you need help to setup the service in steemblog.
+
+
 ### Commands
 
 The commands / tasks in this project is manged with `invoke` package.
@@ -34,13 +41,6 @@ Available tasks:
 ```
 
 To see the introduction of a command, run `pipenv run invoke -h <command>`.
-
-
-### How to Sync Your Blogs
-
-To use the blog service, we simply add your steem account name to the STEEM_ACCOUNTS variable of this project's Travis CI job, then the synchronization will be done daily automatically.
-
-You may contact [@robertyan](https://busy.org/@robertyan) if you need help to setup the service in steemblog.
 
 
 ### Reference
