@@ -47,7 +47,7 @@ def build(ctx):
     """ build the static pages from steem posts """
 
     os.system("cp -f _config.theme.yml themes/icarus/_config.yml")
-    os.system("hexo generate")
+    os.system("hexo generate --silent")
 
 
 @task(help={
@@ -57,7 +57,6 @@ def build_all(ctx):
 
     accounts = settings.get_env_var("STEEM_ACCOUNTS") or []
     if accounts and len(accounts) > 0:
-        os.system("hexo --silent")
         for account in accounts.split(","):
             clean(ctx)
             download(ctx, account)
