@@ -1,5 +1,7 @@
 # -*- coding:utf-8 -*-
 
+import requests
+
 from beem.account import Account
 from beem.rc import RC as ResourceCredits
 from utils.system.date import from_then
@@ -21,6 +23,17 @@ class SteemAccount:
                 return None
         else:
             return profile
+
+    def _avatar_cache(self):
+        return "https://steemitimages.com/u/{}/avatar".format(self.author)
+
+    def avatar(self):
+        avatars = [self._avatar_cache(), self.get_profile("profile_image")]
+        for a in avatars:
+            r = requests.get(a)
+            if r.ok:
+                return a
+        return avatars[0]
 
     def name(self):
         return self.account.name

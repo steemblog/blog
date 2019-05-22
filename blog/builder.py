@@ -89,9 +89,9 @@ class BlogBuilder(SteemReader):
         a = SteemAccount(self.account)
         author = self.account
         name = a.get_profile("name") or ""
+        avatar = a.avatar() or ""
         # about = a.get_profile("about") or ""
         location = a.get_profile("location") or ""
-        avatar = a.get_profile("profile_image") or ""
         website = a.get_profile("website") or ""
 
         # build config file with template
