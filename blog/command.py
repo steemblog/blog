@@ -77,7 +77,7 @@ def test(ctx):
     """ build and launch the blog server in local environment """
 
     build(ctx)
-    os.system("hexo server -s")
+    os.system("hexo server -so")
 
 
 @task(help={
