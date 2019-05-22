@@ -54,7 +54,7 @@ def build(ctx):
     """ build the static pages from steem posts """
 
     configure()
-    os.system("hexo generate --silent")
+    os.system("hexo generate")
 
 
 @task(help={

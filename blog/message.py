@@ -143,7 +143,7 @@ marked:
 githubEmojis:
   className: not-gallery-item
 
-all_minifier: true
+all_minifier: false
 """
 
 MESSAGES['config.theme'] = """
