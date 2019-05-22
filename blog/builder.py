@@ -49,7 +49,7 @@ class BlogBuilder(SteemReader):
 
         # retrieve necessary data from steem
         title = post.title.replace('"', '')
-        body = post.body
+        body = c.get_compatible_markdown()
         date_str = post.json()["created"]
         date = date_str.replace('T', ' ')
         tags = "\n".join(["- {}".format(tag) for tag in c.get_tags()])
