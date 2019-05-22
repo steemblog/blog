@@ -12,15 +12,15 @@ from blog.builder import BlogBuilder
       'tag': 'the tag of the blogs to download',
       'days': 'the posts in recent days to fetch',
       'debug': 'enable the debug mode',
-      'clean': 'clean previous posts before download',
+      'clear': 'clean previous posts before download',
       'production': 'set production mode to download incrementally'
       })
-def download(ctx, account=None, tag=None, days=None, debug=False, clean=False, production=False):
+def download(ctx, account=None, tag=None, days=None, debug=False, clear=False, production=False):
     """ download the posts to local by the account """
 
     if debug:
         settings.set_debug_mode()
-    if clean:
+    if clear:
         clean(ctx)
 
     settings.set_steem_node()
