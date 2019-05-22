@@ -1,6 +1,7 @@
 # -*- coding:utf-8 -*-
 
 import os
+import requests
 
 from steem.comment import SteemComment
 from steem.account import SteemAccount
@@ -113,3 +114,29 @@ class BlogBuilder(SteemReader):
         with open(filename, "w", encoding="utf-8") as f:
             f.write(config)
         logger.info("{} file has been updated for the account @{}".format(filename, author))
+
+    def _blog_exists(self):
+        if not self.account:
+            return False
+
+        blog_url = "https://{}.github.io/@{}".format(BLOG_ORGANIZATION, self.account)
+        r = requests.get(blog_url)
+        if r.ok:
+            logger.info("The blog [{}] already exists".format(blog_url))
+            return True
+        else:
+            logger.info("The blog [{}] doesn't exist".format(blog_url))
+            return False
+
+    def set_smart_duration(self):
+        if not self.account:
+            return
+
+        if self._blog_exists():
+            self.days = settings.get_env_var("DURATION") or 1.5
+            logger.info("The download duration has been set to {} days".format(self.days))
+        else:
+            self.days = None
+            logger.info("The download duration has been expanded to the entire lifetime of the account")
+
+
