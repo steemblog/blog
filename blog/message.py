@@ -37,6 +37,9 @@ categories:
 tags:
 {tags}
 thumbnail: {thumbnail}
+sidebar:
+    right:
+        sticky: true
 widgets:
     -
         type: toc
