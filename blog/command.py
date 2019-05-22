@@ -44,12 +44,16 @@ def clean(ctx):
     os.system("rm -rf source/_posts")
 
 
+def configure():
+    os.system("cp -f _config.theme.yml themes/icarus/_config.yml")
+
+
 @task(help={
       })
 def build(ctx):
     """ build the static pages from steem posts """
 
-    os.system("cp -f _config.theme.yml themes/icarus/_config.yml")
+    configure()
     os.system("hexo generate --silent")
 
 
