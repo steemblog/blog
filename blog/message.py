@@ -37,6 +37,10 @@ categories:
 tags:
 {tags}
 thumbnail: {thumbnail}
+widgets:
+    -
+        type: toc
+        position: right
 ---
 
 
@@ -157,17 +161,17 @@ rss:
 logo: {logo}
 # Open Graph metadata
 # https://hexo.io/docs/helpers.html#open-graph
-open_graph:
-    # Facebook App ID
-    fb_app_id:
-    # Facebook Admin ID
-    fb_admins:
-    # Twitter ID
-    twitter_id:
-    # Twitter site
-    twitter_site:
-    # Google+ profile link
-    google_plus:
+# open_graph:
+#     # Facebook App ID
+#     fb_app_id:
+#     # Facebook Admin ID
+#     fb_admins:
+#     # Twitter ID
+#     twitter_id:
+#     # Twitter site
+#     twitter_site:
+#     # Google+ profile link
+#     google_plus:
 # Navigation bar link settings
 navbar:
     # Navigation bar menu links
@@ -211,10 +215,10 @@ search:
     type: insight
 # Comment plugin settings
 # http://ppoffice.github.io/hexo-theme-icarus/categories/Configuration/Comment-Plugins
-comment:
-    # Name of the comment plugin
-    type: disqus
-    shortname: hexo-theme-icarus
+# comment:
+#     # Name of the comment plugin
+#     type: disqus
+#     shortname: hexo-theme-icarus
 # Donation entries
 # http://ppoffice.github.io/hexo-theme-icarus/categories/Donation/
 # donate:
