@@ -30,8 +30,8 @@ def download(ctx, account=None, tag=None, days=None, debug=False, clear=False, p
     days = days or settings.get_env_var("DURATION")
 
     builder = BlogBuilder(account=account, tag=tag, days=days)
-    if production:
-        builder.set_smart_duration()
+    # if production:
+        # builder.set_smart_duration()
     builder.update_config()
     builder.download()
 
