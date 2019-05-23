@@ -306,7 +306,7 @@ widgets:
         # links:
         #     Hexo: 'https://hexo.io'
         #     Bulma: 'https://bulma.io'
-     -
+    -
         # Widget name
         type: category
         # Where should the widget be placed, left or right
