@@ -306,36 +306,48 @@ widgets:
         # links:
         #     Hexo: 'https://hexo.io'
         #     Bulma: 'https://bulma.io'
-    -
+     -
         # Widget name
         type: category
         # Where should the widget be placed, left or right
         position: left
+        # Cache the widget or not, true or false
+        cache: true
     -
         # Widget name
         type: tagcloud
         # Where should the widget be placed, left or right
         position: left
+        # Cache the widget or not, true or false
+        cache: true
     -
         # Widget name
         type: tag
         # Where should the widget be placed, left or right
         position: left
+        # Cache the widget or not, true or false
+        cache: true
     -
         # Widget name
         type: toc
         # Where should the widget be placed, left or right
         position: right
+        # Cache the widget or not, true or false
+        cache: false
     -
         # Widget name
         type: recent_posts
         # Where should the widget be placed, left or right
         position: right
+        # Cache the widget or not, true or false
+        cache: true
     -
         # Widget name
         type: archive
         # Where should the widget be placed, left or right
         position: right
+        # Cache the widget or not, true or false
+        cache: true
 
 # Other plugin settings
 plugins:
