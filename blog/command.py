@@ -49,18 +49,23 @@ def configure():
 
 
 @task(help={
+      'debug': 'enable the debug mode',
       })
-def build(ctx):
+def build(ctx, debug=False):
     """ build the static pages from steem posts """
 
     configure()
-    os.system("hexo generate")
+    build_cmd = "hexo generate"
+    if debug:
+        build_cmd += " --debug"
+    os.system(build_cmd)
 
 
 @task(help={
+      'debug': 'enable the debug mode',
       'production': 'set production mode to download incrementally'
       })
-def build_all(ctx, production=False):
+def build_all(ctx, debug=False, production=False):
     """ download the posts of all the accounts, and generate pages """
 
     accounts = settings.get_env_var("STEEM_ACCOUNTS") or []
@@ -68,15 +73,16 @@ def build_all(ctx, production=False):
         for account in accounts.split(","):
             clean(ctx)
             download(ctx, account=account, production=production)
-            build(ctx)
+            build(ctx, debug)
 
 
 @task(help={
+      'debug': 'enable the debug mode',
       })
-def test(ctx):
+def test(ctx, debug=False):
     """ build and launch the blog server in local environment """
 
-    build(ctx)
+    build(ctx, debug)
     os.system("hexo server -so")
 
 
