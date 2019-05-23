@@ -78,7 +78,7 @@ class SteemComment:
         try:
             c.refresh()
         except ContentDoesNotExistsException:
-            logger.info("failed when refresh {}".format(self.get_url()))
+            logger.info("Failed when refresh {} with title [{}], which is probably deleted.".format(self.get_url(), c.title))
             return None
 
         return c

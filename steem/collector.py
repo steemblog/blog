@@ -70,9 +70,10 @@ class SteemPostsByAccount:
                             break
                         else:
                             c = sc.refresh()
-                            sc.log()
-                            c_list[c.permlink] = 1
-                            posts.append(c)
+                            if c and 'created' in c and c['created']:
+                                sc.log()
+                                c_list[c.permlink] = 1
+                                posts.append(c)
 
         print ('{} posts are fetched'.format(len(posts)))
         return posts
@@ -154,9 +155,11 @@ class SteemPostsByTag:
                     if days_done:
                         break
                     else:
-                        SteemComment(comment=c).log()
-                        c_list[c.permlink] = 1
-                        posts.append(c)
+                        if c and 'created' in c and c['created']:
+                            SteemComment(comment=c).log()
+                            c_list[c.permlink] = 1
+                            posts.append(c)
+
         return {
             "posts": posts,
             "days_done": days_done
@@ -193,9 +196,10 @@ class SteemCommentsByAccount:
                     if self.receiver is None or len(self.receiver) == 0 \
                         or c.parent_author == self.receiver:
                         c = sc.refresh()
-                        sc.log()
-                        c_list[c.permlink] = 1
-                        comments.append(c)
+                        if c and 'created' in c and c['created']:
+                            sc.log()
+                            c_list[c.permlink] = 1
+                            comments.append(c)
 
         print ('{} comments are fetched'.format(len(comments)))
         return comments
