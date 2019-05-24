@@ -52,6 +52,7 @@ class BlogBuilder(SteemReader):
 
         # retrieve necessary data from steem
         title = post.title.replace('"', '')
+        permlink = post["permlink"]
         body = c.get_compatible_markdown()
         date_str = post.json()["created"]
         date = date_str.replace('T', ' ')
@@ -62,10 +63,12 @@ class BlogBuilder(SteemReader):
 
         # build content with template
         template = get_message("blog", footer=True)
-        content = template.format(title=title, date=date, tags=tags, category=category, thumbnail=thumbnail, body=body, url=url)
+        content = template.format(title=title, permlink=permlink, date=date,
+                                  tags=tags, category=category,
+                                  thumbnail=thumbnail, body=body, url=url)
 
         # write into MD files
-        filename = os.path.join(folder, "{}_{}.md".format(date_str.split('T')[0], post["permlink"]))
+        filename = os.path.join(folder, "{}_{}.md".format(date_str.split('T')[0], permlink))
         with open(filename, "w", encoding="utf-8") as f:
             f.write(content)
 

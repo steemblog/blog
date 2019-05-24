@@ -28,6 +28,7 @@ FOOTERS = {}
 MESSAGES["blog"] = """
 ---
 title: "{title}"
+permlink: {permlink}
 catalog: true
 toc_nav_num: true
 toc: true
@@ -73,7 +74,7 @@ timezone:
 ## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
 url: http://{organization}.{domain}
 root: /@{author}/
-permalink: :category/:post_title/
+permalink: :permlink/
 permalink_defaults:
 
 # Directory
