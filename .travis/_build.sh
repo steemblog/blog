@@ -8,5 +8,5 @@ set -e
 pipenv run invoke blog.build-all -h github --production
 
 # if it's cron job, deploy to netlify in the same time
-[ "${TRAVIS_EVENT_TYPE}" != "cron" ] && exit 0
-pipenv run invoke blog.deploy -h netlify
+# [ "${TRAVIS_EVENT_TYPE}" != "cron" ] && exit 0
+# pipenv run invoke blog.deploy -h netlify
