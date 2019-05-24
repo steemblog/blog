@@ -26,6 +26,6 @@ class LoggerControl:
 
 
 logger_ctl = LoggerControl("blog")
-logger_ctl.set_level(logging.INFO)
+logger_ctl.set_level(logging.WARNING)
 logger = logger_ctl.get_logger()
 

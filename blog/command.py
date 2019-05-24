@@ -77,7 +77,7 @@ def build_all(ctx, accounts=None, host="github", debug=False, production=False):
     if accounts and len(accounts) > 0:
         for account in accounts.split(","):
             clean(ctx)
-            count = download(ctx, account=account, host=host, production=production)
+            count = download(ctx, account=account, host=host, debug=debug, production=production)
             if count > 0:
                 build(ctx, debug)
 
