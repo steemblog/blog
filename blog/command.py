@@ -3,6 +3,7 @@
 import os, time, random
 from invoke import task
 
+from utils.logging.logger import logger
 from steem.settings import settings
 from blog.builder import BlogBuilder
 
@@ -11,11 +12,12 @@ from blog.builder import BlogBuilder
       'account': 'the account of the blogs to download',
       'tag': 'the tag of the blogs to download',
       'days': 'the posts in recent days to fetch',
+      'host': 'the host server for the site: [github, netlify]',
       'debug': 'enable the debug mode',
       'clear': 'clean previous posts before download',
       'production': 'set production mode to download incrementally'
       })
-def download(ctx, account=None, tag=None, days=None, debug=False, clear=False, production=False):
+def download(ctx, account=None, tag=None, days=None, host="github", debug=False, clear=False, production=False):
     """ download the posts to local by the account """
 
     if debug:
@@ -29,7 +31,7 @@ def download(ctx, account=None, tag=None, days=None, debug=False, clear=False, p
     tag = tag or settings.get_env_var("STEEM_TAG")
     days = days or settings.get_env_var("DURATION")
 
-    builder = BlogBuilder(account=account, tag=tag, days=days)
+    builder = BlogBuilder(account=account, tag=tag, days=days, host=host)
     # if production:
         # builder.set_smart_duration()
     builder.update_config()
@@ -64,17 +66,18 @@ def build(ctx, debug=False):
 
 @task(help={
       'accounts': 'the accounts of the blogs to download, delimiter is comma',
+      'host': 'the host server for the site: [github, netlify]',
       'debug': 'enable the debug mode',
       'production': 'set production mode to download incrementally'
       })
-def build_all(ctx, accounts=None, debug=False, production=False):
+def build_all(ctx, accounts=None, host="github", debug=False, production=False):
     """ download the posts of all the accounts, and generate pages """
 
     accounts = accounts or settings.get_env_var("STEEM_ACCOUNTS") or []
     if accounts and len(accounts) > 0:
         for account in accounts.split(","):
             clean(ctx)
-            count = download(ctx, account=account, production=production)
+            count = download(ctx, account=account, host=host, production=production)
             if count > 0:
                 build(ctx, debug)
 
@@ -90,10 +93,24 @@ def test(ctx, debug=False):
 
 
 @task(help={
+      "host": "the host environment to deploy the build"
       })
-def deploy(ctx):
+def deploy(ctx, host="hexo"):
     """ deploy the static blog to the GitHub pages """
 
-    build(ctx)
-    os.system("hexo deploy")
+    logger.info("launch the deploy on [{}]".format(host))
+    if host == "hexo":
+        build(ctx)
+        os.system("hexo deploy")
+    elif host == "netlify":
+        hook_id = settings.get_env_var("NETLIFY_HOOK") or None
+        if hook_id:
+            build_hook = "curl -X POST -d {} https://api.netlify.com/build_hooks/" + hook_id
+            os.system(build_hook)
+        else:
+            logger.error("Failed: we need the hook ID to deploy")
+    elif host == "github":
+        pass
+    else:
+        pass
 

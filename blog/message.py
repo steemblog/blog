@@ -71,7 +71,7 @@ timezone:
 
 # URL
 ## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
-url: http://{organization}.github.io
+url: http://{organization}.{domain}
 root: /@{author}/
 permalink: :category/:post_title/
 permalink_defaults:

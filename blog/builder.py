@@ -22,8 +22,10 @@ CONFIG_THEME_FILE = "_config.theme.yml"
 
 class BlogBuilder(SteemReader):
 
-    def __init__(self, account=None, tag=None, days=None):
+    def __init__(self, account=None, tag=None, days=None, host="github"):
         SteemReader.__init__(self, account=account, tag=tag, days=days)
+
+        self.host = host
 
         # create blog folder
         if self.account:
@@ -69,7 +71,6 @@ class BlogBuilder(SteemReader):
 
         logger.info("Download post [{}] into file {}".format(title, filename))
 
-
     def download(self):
         if len(self.posts) == 0:
             self.get_latest_posts()
@@ -78,10 +79,17 @@ class BlogBuilder(SteemReader):
                 self._write_content(post)
         return len(self.posts)
 
+    def _get_domain(self):
+        if self.host == "netlify":
+            return "netlify.com"
+        else: # self.host == "github"
+            return "github.io"
+
     def update_config(self):
         if not self.account:
             return
 
+        domain = self._get_domain()
         organization = BLOG_ORGANIZATION
         logo = BLOG_AVATAR
         favicon = BLOG_FAVICON
@@ -98,8 +106,8 @@ class BlogBuilder(SteemReader):
 
         # build config file with template
         template = get_message("config")
-        config = template.format(organization=organization, language=language,
-                                 name=name, author=author)
+        config = template.format(organization=organization, domain=domain,
+                                 language=language, name=name, author=author)
         filename = CONFIG_FILE
         with open(filename, "w", encoding="utf-8") as f:
             f.write(config)
