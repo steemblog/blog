@@ -33,7 +33,7 @@ def download(ctx, account=None, tag=None, days=None, debug=False, clear=False, p
     # if production:
         # builder.set_smart_duration()
     builder.update_config()
-    builder.download()
+    return builder.download()
 
 
 @task(help={
@@ -63,18 +63,20 @@ def build(ctx, debug=False):
 
 
 @task(help={
+      'accounts': 'the accounts of the blogs to download, delimiter is comma',
       'debug': 'enable the debug mode',
       'production': 'set production mode to download incrementally'
       })
-def build_all(ctx, debug=False, production=False):
+def build_all(ctx, accounts=None, debug=False, production=False):
     """ download the posts of all the accounts, and generate pages """
 
-    accounts = settings.get_env_var("STEEM_ACCOUNTS") or []
+    accounts = accounts or settings.get_env_var("STEEM_ACCOUNTS") or []
     if accounts and len(accounts) > 0:
         for account in accounts.split(","):
             clean(ctx)
-            download(ctx, account=account, production=production)
-            build(ctx, debug)
+            count = download(ctx, account=account, production=production)
+            if count > 0:
+                build(ctx, debug)
 
 
 @task(help={

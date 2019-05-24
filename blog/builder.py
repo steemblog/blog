@@ -76,6 +76,7 @@ class BlogBuilder(SteemReader):
         if len(self.posts) > 0:
             for post in self.posts:
                 self._write_content(post)
+        return len(self.posts)
 
     def update_config(self):
         if not self.account:
