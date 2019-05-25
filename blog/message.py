@@ -63,6 +63,8 @@ MESSAGES['config'] = """
 ## Source: https://github.com/hexojs/hexo/
 
 # Site
+# add 'site_title' because 'title' is overriden by the metadata in post
+site_title: {name}
 title: {name}
 subtitle:
 description:
