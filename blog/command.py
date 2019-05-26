@@ -56,8 +56,8 @@ def configure():
 def build(ctx, debug=False):
     """ build the static pages from steem posts """
 
-    os.system("hexo clean")
     configure()
+    os.system("hexo clean")
     build_cmd = "hexo generate"
     if debug:
         build_cmd += " --debug"
