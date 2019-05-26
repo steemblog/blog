@@ -99,6 +99,13 @@ class Settings:
         else:
             return None
 
+    def set_env_var(self, key, value):
+        if key and value:
+            os.environ[key] = value
+            return True
+        else:
+            return False
+
 
 settings = Settings()
 

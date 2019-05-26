@@ -47,6 +47,7 @@ def clean(ctx):
 
 
 def configure():
+    settings.set_env_var("NODE_OPTIONS", "--max-old-space-size=8192")
     os.system("cp -f _config.theme.yml themes/icarus/_config.yml")
 
 
