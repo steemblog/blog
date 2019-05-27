@@ -300,6 +300,8 @@ widgets:
             Website:
                 icon: fa fa-home
                 url: '{website}'
+        # Cache the widget or not, true or false
+        cache: true
     # -
         # Widget name
         # type: links
