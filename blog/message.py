@@ -154,6 +154,8 @@ githubEmojis:
   className: not-gallery-item
 
 all_minifier: false
+
+incremental: {incremental}
 """
 
 MESSAGES['config.theme'] = """

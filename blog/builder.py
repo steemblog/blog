@@ -112,7 +112,7 @@ class BlogBuilder(SteemReader):
             repo = "https://github.com/" + repo
         return repo
 
-    def update_config(self):
+    def update_config(self, incremental=False):
         if not self.account:
             return
 
@@ -130,11 +130,13 @@ class BlogBuilder(SteemReader):
         # about = a.get_profile("about") or ""
         location = a.get_profile("location") or ""
         website = a.get_profile("website") or ""
+        incremental = "true" if incremental else "false"
 
         # build config file with template
         template = get_message("config")
         config = template.format(organization=organization, domain=domain,
-                                 language=language, name=name, author=author)
+                                 language=language, name=name, author=author,
+                                 incremental=incremental)
         filename = CONFIG_FILE
         with open(filename, "w", encoding="utf-8") as f:
             f.write(config)
@@ -203,7 +205,7 @@ class BlogBuilder(SteemReader):
         res = subprocess.run(['git', 'diff', '--name-only', '--cached'], stdout=subprocess.PIPE).stdout.decode('utf-8')
         os.chdir("..")
 
-        paths = [os.path.join(SOURCE_FOLDER, path) for path in res.split("\n") if len(path) > 0]
+        paths = [path for path in res.split("\n") if len(path) > 0]
         count = len(paths)
         logger.info("{} new posts are found:\n{}".format(count, res))
         return count

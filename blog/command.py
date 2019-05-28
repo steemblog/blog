@@ -35,7 +35,7 @@ def download(ctx, account=None, tag=None, days=None, host="github", debug=False,
     if production:
         # builder.set_smart_duration()
         builder.fetch_source()
-    builder.update_config()
+    builder.update_config(incremental=production)
     count = builder.download()
     if production:
         count = builder.list_new_posts()
