@@ -19,6 +19,9 @@ BLOG_FAVICON = "https://www.easyicon.net/api/resizeApi.php?id=1185564&size=32"
 CONFIG_FILE = "_config.yml"
 CONFIG_THEME_FILE = "_config.theme.yml"
 
+SOURCE_BRANCH = "source"
+SOURCE_FOLDER = "source"
+
 
 class BlogBuilder(SteemReader):
 
@@ -32,8 +35,8 @@ class BlogBuilder(SteemReader):
             self.blog_folder = os.path.join(BLOG_CONTENT_FOLDER, "account", self.account)
         elif self.tag:
             self.blog_folder = os.path.join(BLOG_CONTENT_FOLDER, "tag", self.tag)
-        if not os.path.exists(self.blog_folder):
-            os.makedirs(self.blog_folder)
+
+        self.folder_created = False
 
     def get_name(self):
         name = "blog"
@@ -44,6 +47,9 @@ class BlogBuilder(SteemReader):
         return True
 
     def _get_content_folder(self):
+        if not self.folder_created or not os.path.exists(self.blog_folder):
+            os.makedirs(self.blog_folder)
+            self.folder_created = True
         return self.blog_folder
 
     def _write_content(self, post):
@@ -88,6 +94,15 @@ class BlogBuilder(SteemReader):
         else: # self.host == "github"
             return "github.io"
 
+    def _get_blog_url(self):
+        return "https://{}.{}/@{}".format(BLOG_ORGANIZATION, self._get_domain(), self.account)
+
+    def _get_repo(self, prefix=True):
+        repo = "{}/{}.github.io".format(BLOG_ORGANIZATION)
+        if prefix:
+            repo = "https://github.com/" + repo
+        return repo
+
     def update_config(self):
         if not self.account:
             return
@@ -131,7 +146,7 @@ class BlogBuilder(SteemReader):
         if not self.account:
             return False
 
-        blog_url = "https://{}.github.io/@{}".format(BLOG_ORGANIZATION, self.account)
+        blog_url = self._get_blog_url()
         r = requests.get(blog_url)
         if r.ok:
             logger.info("The blog [{}] already exists".format(blog_url))
@@ -139,6 +154,16 @@ class BlogBuilder(SteemReader):
         else:
             logger.info("The blog [{}] doesn't exist".format(blog_url))
             return False
+
+    def fetch_source(self):
+        github_pat = settings.get_env_var("GITHUB_PAT") or None
+        if github_pat:
+            github_pat += "@"
+        else:
+            github_pat = ""
+        cmd = "git clone --depth 1 --branch {} --single-branch https://{}github.com/${BLOG_REPO}.git {}".format(SOURCE_BRANCH, github_pat, self._get_repo(prefix=False), SOURCE_FOLDER)
+        os.system(cmd)
+        logger.info("Cloned source repo into workspace: {}".format(SOURCE_FOLDER))
 
     def set_smart_duration(self):
         if not self.account:
