@@ -36,7 +36,10 @@ def download(ctx, account=None, tag=None, days=None, host="github", debug=False,
         # builder.set_smart_duration()
         builder.fetch_source()
     builder.update_config()
-    return builder.download()
+    count = builder.download()
+    if production:
+        count = builder.list_new_posts()
+    return count
 
 
 @task(help={
@@ -44,7 +47,7 @@ def download(ctx, account=None, tag=None, days=None, host="github", debug=False,
 def clean(ctx):
     """ clean the downloaded posts """
 
-    os.system("rm -rf source/_posts")
+    os.system("rm -rf source")
 
 
 def configure():
