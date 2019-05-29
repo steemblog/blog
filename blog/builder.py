@@ -1,6 +1,7 @@
 # -*- coding:utf-8 -*-
 
 import os
+import shutil
 import subprocess
 import requests
 
@@ -21,9 +22,10 @@ CONFIG_FILE = "_config.yml"
 CONFIG_THEME_FILE = "_config.theme.yml"
 
 SOURCE_BRANCH = "source"
-SOURCE_FOLDER = "source"
+HEXO_SOURCE_FOLDER = "source"
+SOURCE_REPO_FOLDER = ".source"
 POSTS_FOLDER = "_posts"
-BLOG_CONTENT_FOLDER = "./{}/{}".format(SOURCE_FOLDER, POSTS_FOLDER)
+BLOG_CONTENT_FOLDER = "./{}/{}".format(HEXO_SOURCE_FOLDER, POSTS_FOLDER)
 
 
 class BlogBuilder(SteemReader):
@@ -37,6 +39,7 @@ class BlogBuilder(SteemReader):
         self.blog_folder = os.path.join(BLOG_CONTENT_FOLDER, self._get_subfolder())
 
         self.folder_created = False
+        self.commited = False
 
     def get_name(self):
         name = "blog"
@@ -166,14 +169,14 @@ class BlogBuilder(SteemReader):
         return github_pat
 
     def setup_source_repo(self):
-        git_clone_cmd = "git clone --depth 1 --branch {} --single-branch https://{}github.com/{}.git {}".format(SOURCE_BRANCH, self._get_github_pat(), self._get_repo(prefix=False), SOURCE_FOLDER)
+        git_clone_cmd = "git clone --depth 1 --branch {} --single-branch https://{}github.com/{}.git {}".format(SOURCE_BRANCH, self._get_github_pat(), self._get_repo(prefix=False), SOURCE_REPO_FOLDER)
         os.system(git_clone_cmd)
         # on `source` branch after clone
-        logger.info("Cloned source repo into workspace: {}".format(SOURCE_FOLDER))
+        logger.info("Cloned source repo into workspace: {}".format(SOURCE_REPO_FOLDER))
 
     def _init_source_repo(self):
-        os.mkdir(SOURCE_FOLDER)
-        os.chdir(SOURCE_FOLDER)
+        os.mkdir(SOURCE_REPO_FOLDER)
+        os.chdir(SOURCE_REPO_FOLDER)
         git_init_cmds = [
             "git init",
             "git remote add origin https://{}github.com/{}.git".format(self._get_github_pat(), self._get_repo(prefix=False))
@@ -189,7 +192,9 @@ class BlogBuilder(SteemReader):
         os.chdir("..")
 
     def _sparse_checkout(self):
-        os.chdir(SOURCE_FOLDER)
+        """ not use sparse checkout now to keep `source` folder clean  """
+
+        os.chdir(SOURCE_REPO_FOLDER)
         subfolder = os.path.join(POSTS_FOLDER, self._get_subfolder())
         git_sparse_checkout_cmds = [
             "git config core.sparsecheckout true",
@@ -203,51 +208,57 @@ class BlogBuilder(SteemReader):
         logger.info("Sparse checkout to subfolder: {}".format(subfolder))
 
     def _commit_source(self):
-        os.chdir(SOURCE_FOLDER)
+        os.chdir(SOURCE_REPO_FOLDER)
         # commit the files into source repo
         os.system("git add --all *")
         res = os.system('git commit -m "Source updated: {}"'.format(get_uct_time_str()))
         os.chdir("..")
 
         if res == 0:
-            logger.info("Commited source into [{}] folder".format(SOURCE_FOLDER))
+            logger.info("Commited source into [{}] folder".format(SOURCE_REPO_FOLDER))
             return True
         else:
-            logger.info("Failed to add new source into [{}] folder".format(SOURCE_FOLDER))
+            logger.info("Failed to add new source into [{}] folder".format(SOURCE_REPO_FOLDER))
             return False
 
     def _diff_files(self):
-        os.chdir(SOURCE_FOLDER)
+        os.chdir(SOURCE_REPO_FOLDER)
         res = subprocess.run(['git', 'diff', 'HEAD', 'HEAD~1', '--name-only'], stdout=subprocess.PIPE).stdout.decode('utf-8')
         os.chdir("..")
         files = [f for f in res.split("\n") if len(f) > 0]
         logger.info("{} different files:\n{}".format(len(files), res))
         return files
 
-    def include_user_source(self):
-        success = self._commit_source()
-        self._sparse_checkout()
-        return success
+    def _copy_files(self, src_dir, dst_dir):
+        for f in self.list_all_posts(src_dir):
+            shutil.copyfile(os.path.join(src_dir, f), os.path.join(dst_dir, f))
+
+    def update_workspace(self):
+        source_folder = os.path.join(SOURCE_REPO_FOLDER, POSTS_FOLDER, self._get_subfolder())
+        self._copy_files(self.blog_folder, source_folder)
+        self._copy_files(source_folder, self.blog_folder)
+        self.commited = self._commit_source()
 
     def list_new_posts(self):
         """ this should be run after download completed """
 
-        success = self.include_user_source()
-        if success:
+        if self.commited:
+            # self._sparse_checkout()
             files = self._diff_files()
             count = len(files)
         else:
+            files = []
             count = 0
         logger.info("{} new posts needs to build.".format(count))
-        return count
+        return files
 
-    def list_all_posts(self):
+    def list_all_posts(self, folder=None):
         """ list all the posts in the blog folder """
 
-        files = [f for f in os.listdir(self.blog_folder) if os.path.isfile(os.path.join(self.blog_folder, f))]
-        count = len(files)
-        logger.info("{} posts in blog folder.".format(count))
-        return count
+        folder = folder or self.blog_folder
+        files = [f for f in os.listdir(folder) if os.path.isfile(os.path.join(folder, f))]
+        logger.info("{} posts in blog folder {}".format(len(files), folder))
+        return files
 
     def _blog_exists(self):
         if not self.account:

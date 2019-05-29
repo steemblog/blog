@@ -5,7 +5,7 @@ from invoke import task
 
 from utils.logging.logger import logger
 from steem.settings import settings
-from blog.builder import BlogBuilder
+from blog.builder import BlogBuilder, SOURCE_REPO_FOLDER, HEXO_SOURCE_FOLDER
 
 
 @task(help={
@@ -43,13 +43,14 @@ def download(ctx, account=None, tag=None, days=None, host="github", debug=False,
     builder.update_config(incremental=incremental)
 
     count = builder.download()
+    if production:
+        builder.update_workspace()
+
     if incremental:
         if production and count > 0:
-            count = builder.list_new_posts()
+            count = len(builder.list_new_posts())
     else:
-        if production:
-            builder.include_user_source()
-        count = builder.list_all_posts()
+        count = len(builder.list_all_posts())
 
     return count
 
@@ -59,6 +60,7 @@ def download(ctx, account=None, tag=None, days=None, host="github", debug=False,
 def setup(ctx):
     """ clean the downloaded posts """
 
+    os.system("rm -rf {}".format(SOURCE_REPO_FOLDER))
     builder = BlogBuilder(account="none")
     builder.setup_source_repo()
 
@@ -68,7 +70,7 @@ def setup(ctx):
 def clean(ctx):
     """ clean the downloaded posts """
 
-    os.system("rm -rf source")
+    os.system("rm -rf {}".format(HEXO_SOURCE_FOLDER))
 
 
 def configure():
@@ -101,10 +103,10 @@ def build_all(ctx, accounts=None, host="github", debug=False, production=False):
 
     accounts = accounts or settings.get_env_var("STEEM_ACCOUNTS") or []
     if accounts and len(accounts) > 0:
-        clean(ctx)
         if production:
             setup(ctx)
         for account in accounts.split(","):
+            clean(ctx)
             count = download(ctx, account=account, host=host, debug=debug, production=production)
             if count > 0:
                 build(ctx, debug)

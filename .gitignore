@@ -118,3 +118,4 @@ source/
 _config.yml
 _config.theme.yml
 .archive/
+.source/
