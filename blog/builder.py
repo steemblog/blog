@@ -107,6 +107,9 @@ class BlogBuilder(SteemReader):
     def _get_blog_url(self):
         return "https://{}.{}/@{}".format(BLOG_ORGANIZATION, self._get_domain(), self.account)
 
+    def _get_source_repo_url(self):
+        return "{}/tree/{}".format(self._get_repo(), self.blog_folder)
+
     def _get_repo(self, prefix=True):
         repo = "{0}/{0}.github.io".format(BLOG_ORGANIZATION)
         if prefix:
@@ -247,11 +250,28 @@ class BlogBuilder(SteemReader):
             logger.info("The blog [{}] doesn't exist".format(blog_url))
             return False
 
+    def _source_repo_exists(self):
+        if not self.account:
+            return False
+
+        source_url = self._get_source_repo_url()
+        try:
+            r = requests.get(source_url)
+            if r.ok:
+                logger.info("The source repo [{}] already exists".format(source_url))
+                return True
+            else:
+                logger.info("The source repo [{}] doesn't exist".format(source_url))
+                return False
+        except:
+            logger.info("Failed when try to connect to source repo [{}]".format(source_url))
+            return False
+
     def set_smart_duration(self):
         if not self.account:
             return
 
-        if self._blog_exists():
+        if self._source_repo_exists() and self._blog_exists():
             self.days = settings.get_env_var("DURATION") or 1.5
             logger.info("The download duration has been set to {} days".format(self.days))
         else:
