@@ -21,7 +21,7 @@ if [ -d public ]; then
     git push -q origin master
 
     # save source to repo
-    cd ../source
+    cd ../.source
 
     if [ -d .git ]; then
       git push -q origin source
