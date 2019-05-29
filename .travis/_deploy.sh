@@ -16,3 +16,5 @@ NOW=$(date +"%Y-%m-%d %H:%M:%S %z")
 git add --all *
 git commit -m "Site updated: ${NOW}" || true
 git push -q origin master
+
+cd ..
