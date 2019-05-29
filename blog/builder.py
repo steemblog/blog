@@ -9,6 +9,7 @@ from steem.account import SteemAccount
 from steem.settings import settings, STEEM_HOST
 from data.reader import SteemReader
 from utils.logging.logger import logger
+from utils.system.date import get_uct_time_str
 from blog.message import get_message
 
 
@@ -153,6 +154,86 @@ class BlogBuilder(SteemReader):
             f.write(config)
         logger.info("{} file has been updated for the account @{}".format(filename, author))
 
+    def _get_github_pat(self):
+        github_pat = settings.get_env_var("GITHUB_PAT") or None
+        if github_pat:
+            github_pat += "@"
+        else:
+            github_pat = ""
+        return github_pat
+
+    def setup_source_repo(self):
+        git_clone_cmd = "git clone --depth 1 --branch {} --single-branch https://{}github.com/{}.git {}".format(SOURCE_BRANCH, self._get_github_pat(), self._get_repo(prefix=False), SOURCE_FOLDER)
+        os.system(git_clone_cmd)
+        # on `source` branch after clone
+        logger.info("Cloned source repo into workspace: {}".format(SOURCE_FOLDER))
+
+    def _init_source_repo(self):
+        os.mkdir(SOURCE_FOLDER)
+        os.chdir(SOURCE_FOLDER)
+        git_init_cmds = [
+            "git init",
+            "git remote add origin https://{}github.com/{}.git".format(self._get_github_pat(), self._get_repo(prefix=False))
+        ]
+        for cmd in git_init_cmds:
+            os.system(cmd)
+
+        # run the below commads after above command, to do sparse checkout
+        # "git config core.sparsecheckout true",
+        # "echo {}/ >> .git/info/sparse-checkout".format(subfolder),
+        # "git pull origin {} --depth 1".format(SOURCE_BRANCH)
+
+        os.chdir("..")
+
+    def _sparse_checkout(self):
+        os.chdir(SOURCE_FOLDER)
+        subfolder = os.path.join(POSTS_FOLDER, self._get_subfolder())
+        git__sparse_checkout_cmds = [
+            "git config core.sparsecheckout true",
+            "echo {}/ > .git/info/sparse-checkout".format(subfolder),
+            "git read-tree -mu HEAD"
+        ]
+        for cmd in git__sparse_checkout_cmds:
+            os.system(cmd)
+        os.chdir("..")
+
+        logger.info("Sparse checkout to subfolder: {}".format(subfolder))
+
+    def _commit_source(self):
+        os.chdir(SOURCE_FOLDER)
+        # commit the files into source repo
+        os.system("git add --all *")
+        res = os.system('git commit -m "Source updated: {}"'.format(get_uct_time_str()))
+        os.chdir("..")
+
+        if res == 0:
+            logger.info("Commited source into [{}] folder".format(SOURCE_FOLDER))
+            return True
+        else:
+            logger.info("Failed to add new source into [{}] folder".format(SOURCE_FOLDER))
+            return False
+
+    def _diff_files(self):
+        os.chdir(SOURCE_FOLDER)
+        res = subprocess.run(['git', 'diff', 'HEAD', 'HEAD~1', '--name-only'], stdout=subprocess.PIPE).stdout.decode('utf-8')
+        os.chdir("..")
+        files = [f for f in res.split("\n") if len(f) > 0]
+        logger.info("{} different files:\n{}".format(len(files), res))
+        return files
+
+    def list_new_posts(self):
+        """ this should be run after download completed """
+
+        success = self._commit_source()
+        if success:
+            self._sparse_checkout()
+            files = self._diff_files()
+            count = len(files)
+        else:
+            count = 0
+        logger.info("{} new posts are found.".format(count))
+        return count
+
     def _blog_exists(self):
         if not self.account:
             return False
@@ -165,50 +246,6 @@ class BlogBuilder(SteemReader):
         else:
             logger.info("The blog [{}] doesn't exist".format(blog_url))
             return False
-
-    def fetch_source(self):
-        github_pat = settings.get_env_var("GITHUB_PAT") or None
-        if github_pat:
-            github_pat += "@"
-        else:
-            github_pat = ""
-
-        subfolder = os.path.join(POSTS_FOLDER, self._get_subfolder())
-        git_clone_cmd = "git clone --depth 1 --branch {} --single-branch https://{}github.com/{}.git {}".format(SOURCE_BRANCH, github_pat, self._get_repo(prefix=False), SOURCE_FOLDER)
-
-        git_init_cmds = [
-            "git init",
-            "git remote add origin https://{}github.com/{}.git".format(github_pat, self._get_repo(prefix=False))
-        ]
-
-        git_sparse_checkout_cmds = [
-            "git config core.sparsecheckout true",
-            "echo {}/ >> .git/info/sparse-checkout".format(subfolder),
-            # "git read-tree -mu HEAD"
-            "git pull origin {} --depth 1".format(SOURCE_BRANCH)
-        ]
-
-        # os.system(git_clone_cmd)
-        os.mkdir(SOURCE_FOLDER)
-        os.chdir(SOURCE_FOLDER)
-        for cmd in git_init_cmds:
-            os.system(cmd)
-        for cmd in git_sparse_checkout_cmds:
-            os.system(cmd)
-        os.chdir("..")
-
-        logger.info("Cloned source repo into workspace: {}".format(SOURCE_FOLDER))
-
-    def list_new_posts(self):
-        os.chdir(SOURCE_FOLDER)
-        os.system("git add --all *")
-        res = subprocess.run(['git', 'diff', '--name-only', '--cached'], stdout=subprocess.PIPE).stdout.decode('utf-8')
-        os.chdir("..")
-
-        paths = [path for path in res.split("\n") if len(path) > 0]
-        count = len(paths)
-        logger.info("{} new posts are found:\n{}".format(count, res))
-        return count
 
     def set_smart_duration(self):
         if not self.account:

@@ -25,3 +25,6 @@ def get_cn_time_str():
     timestamp = int(1000 * time.time())
 
     return str_time, timestamp
+
+def get_uct_time_str():
+    return datetime.now(pytz.utc).strftime('%Y-%m-%d %H:%M:%S %z')

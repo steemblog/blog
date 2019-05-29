@@ -32,14 +32,22 @@ def download(ctx, account=None, tag=None, days=None, host="github", debug=False,
     days = days or settings.get_env_var("DURATION")
 
     builder = BlogBuilder(account=account, tag=tag, days=days, host=host)
-    if production:
+    # if production:
         # builder.set_smart_duration()
-        builder.fetch_source()
     builder.update_config(incremental=production)
     count = builder.download()
     if production:
         count = builder.list_new_posts()
     return count
+
+
+@task(help={
+      })
+def setup(ctx):
+    """ clean the downloaded posts """
+
+    builder = BlogBuilder(account="none")
+    builder.setup_source_repo()
 
 
 @task(help={
@@ -80,8 +88,9 @@ def build_all(ctx, accounts=None, host="github", debug=False, production=False):
 
     accounts = accounts or settings.get_env_var("STEEM_ACCOUNTS") or []
     if accounts and len(accounts) > 0:
+        clean(ctx)
+        setup(ctx)
         for account in accounts.split(","):
-            clean(ctx)
             count = download(ctx, account=account, host=host, debug=debug, production=production)
             if count > 0:
                 build(ctx, debug)
