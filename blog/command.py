@@ -32,11 +32,11 @@ def download(ctx, account=None, tag=None, days=None, host="github", debug=False,
     days = days or settings.get_env_var("DURATION")
 
     builder = BlogBuilder(account=account, tag=tag, days=days, host=host)
-    # if production:
-        # builder.set_smart_duration()
+    if production:
+        builder.set_smart_duration()
     builder.update_config(incremental=production)
     count = builder.download()
-    if production:
+    if production and count > 0:
         count = builder.list_new_posts()
     return count
 
