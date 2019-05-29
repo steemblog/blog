@@ -24,6 +24,7 @@ if [ -d public ]; then
     cd ../source
 
     if [ -d .git ]; then
+      gie checkout source
       NOW=$(date +"%Y-%m-%d %H:%M:%S %z")
       git commit -m "Source updated: ${NOW}" || true
       git branch
