@@ -5,13 +5,17 @@ const UglifyJS = require('uglify-es');
 const CleanCSS = require('clean-css');
 
 const root = path.join(__dirname, '../themes/icarus/source/');
+const _excludes = (path) => {
+    // exclude animation and widget js files
+    return path.includes('animation') || path.includes('widget');
+}
 
 function replaceWithBundled(html) {
     const urlFor = hexo.extend.helper.get('url_for').bind(hexo);
     const $ = cheerio.load(html, { decodeEntities: false });
     $('script').each(function () {
         const url = $(this).attr('src');
-        if (url && url.startsWith(urlFor('/js')) && url.endsWith('.js') && !url.includes('animation')) {
+        if (url && url.startsWith(urlFor('/js')) && url.endsWith('.js') && !_excludes(url)) {
             $(this).remove();
         }
     });
@@ -29,7 +33,7 @@ function replaceWithBundled(html) {
 hexo.extend.generator.register('bundle.js', function (locals) {
     const folder = path.join(root, 'js');
     const concated = fs.readdirSync(path.join(root, 'js'))
-        .filter(filename => filename.endsWith('.js') && !filename.includes('animation'))
+        .filter(filename => filename.endsWith('.js') && !_excludes(filename))
         .map(filename => fs.readFileSync(path.join(folder, filename)))
         .join('\n');
     const result = UglifyJS.minify(concated);
