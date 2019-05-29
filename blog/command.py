@@ -31,10 +31,16 @@ def download(ctx, account=None, tag=None, days=None, host="github", debug=False,
     tag = tag or settings.get_env_var("STEEM_TAG")
     days = days or settings.get_env_var("DURATION")
 
+    clean_build = settings.get_env_var("CLEAN_BUILD")
+    if clean_build and bool(clean_build) == True:
+        incremental = False
+    else:
+        incremental = production
+
     builder = BlogBuilder(account=account, tag=tag, days=days, host=host)
     if production:
         builder.set_smart_duration()
-    builder.update_config(incremental=production)
+    builder.update_config(incremental=incremental)
     count = builder.download()
     if production and count > 0:
         count = builder.list_new_posts()
