@@ -26,7 +26,9 @@ if [ -d public ]; then
     if [ -d .git ]; then
       NOW=$(date +"%Y-%m-%d %H:%M:%S %z")
       git commit -m "Source updated: ${NOW}" || true
-      git push -q origin source || true
+      git branch
+      git log
+      git push -q origin source
     fi
 
     cd ..
