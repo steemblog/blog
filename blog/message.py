@@ -154,6 +154,8 @@ githubEmojis:
   className: not-gallery-item
 
 all_minifier: false
+
+incremental: {incremental}
 """
 
 MESSAGES['config.theme'] = """
@@ -302,6 +304,8 @@ widgets:
                 url: '{website}'
         # Cache the widget or not, true or false
         cache: true
+        # Render the widget as a component
+        component: true
     # -
         # Widget name
         # type: links
@@ -318,6 +322,8 @@ widgets:
         position: left
         # Cache the widget or not, true or false
         cache: true
+        # Render the widget as a component
+        component: true
     -
         # Widget name
         type: tagcloud
@@ -325,6 +331,8 @@ widgets:
         position: left
         # Cache the widget or not, true or false
         cache: true
+        # Render the widget as a component
+        component: true
     -
         # Widget name
         type: tag
@@ -332,6 +340,8 @@ widgets:
         position: left
         # Cache the widget or not, true or false
         cache: true
+        # Render the widget as a component
+        component: true
     -
         # Widget name
         type: toc
@@ -346,6 +356,8 @@ widgets:
         position: right
         # Cache the widget or not, true or false
         cache: true
+        # Render the widget as a component
+        component: true
     -
         # Widget name
         type: archive
@@ -353,6 +365,8 @@ widgets:
         position: right
         # Cache the widget or not, true or false
         cache: true
+        # Render the widget as a component
+        component: true
 
 # Other plugin settings
 plugins:
