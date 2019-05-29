@@ -47,10 +47,9 @@ def download(ctx, account=None, tag=None, days=None, host="github", debug=False,
         if production and count > 0:
             count = builder.list_new_posts()
     else:
+        if production:
+            builder.include_user_source()
         count = builder.list_all_posts()
-
-    if production:
-        builder.checkout_user_source()
 
     return count
 

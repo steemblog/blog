@@ -188,7 +188,7 @@ class BlogBuilder(SteemReader):
 
         os.chdir("..")
 
-    def checkout_user_source(self):
+    def _sparse_checkout(self):
         os.chdir(SOURCE_FOLDER)
         subfolder = os.path.join(POSTS_FOLDER, self._get_subfolder())
         git_sparse_checkout_cmds = [
@@ -224,10 +224,15 @@ class BlogBuilder(SteemReader):
         logger.info("{} different files:\n{}".format(len(files), res))
         return files
 
+    def include_user_source(self):
+        success = self._commit_source()
+        self._sparse_checkout()
+        return success
+
     def list_new_posts(self):
         """ this should be run after download completed """
 
-        success = self._commit_source()
+        success = self.include_user_source()
         if success:
             files = self._diff_files()
             count = len(files)
