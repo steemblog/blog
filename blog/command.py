@@ -41,9 +41,17 @@ def download(ctx, account=None, tag=None, days=None, host="github", debug=False,
     if production:
         builder.set_smart_duration()
     builder.update_config(incremental=incremental)
+
     count = builder.download()
-    if production and count > 0:
-        count = builder.list_new_posts()
+    if incremental:
+        if production and count > 0:
+            count = builder.list_new_posts()
+    else:
+        count = builder.list_all_posts()
+
+    if production:
+        builder.checkout_user_source()
+
     return count
 
 
@@ -95,7 +103,8 @@ def build_all(ctx, accounts=None, host="github", debug=False, production=False):
     accounts = accounts or settings.get_env_var("STEEM_ACCOUNTS") or []
     if accounts and len(accounts) > 0:
         clean(ctx)
-        setup(ctx)
+        if production:
+            setup(ctx)
         for account in accounts.split(","):
             count = download(ctx, account=account, host=host, debug=debug, production=production)
             if count > 0:

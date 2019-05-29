@@ -188,15 +188,15 @@ class BlogBuilder(SteemReader):
 
         os.chdir("..")
 
-    def _sparse_checkout(self):
+    def checkout_user_source(self):
         os.chdir(SOURCE_FOLDER)
         subfolder = os.path.join(POSTS_FOLDER, self._get_subfolder())
-        git__sparse_checkout_cmds = [
+        git_sparse_checkout_cmds = [
             "git config core.sparsecheckout true",
             "echo {}/ > .git/info/sparse-checkout".format(subfolder),
             "git read-tree -mu HEAD"
         ]
-        for cmd in git__sparse_checkout_cmds:
+        for cmd in git_sparse_checkout_cmds:
             os.system(cmd)
         os.chdir("..")
 
@@ -229,12 +229,19 @@ class BlogBuilder(SteemReader):
 
         success = self._commit_source()
         if success:
-            self._sparse_checkout()
             files = self._diff_files()
             count = len(files)
         else:
             count = 0
-        logger.info("{} new posts are found.".format(count))
+        logger.info("{} new posts needs to build.".format(count))
+        return count
+
+    def list_all_posts(self):
+        """ list all the posts in the blog folder """
+
+        files = [f for f in os.listdir(self.blog_folder) if os.path.isfile(os.path.join(self.blog_folder, f))]
+        count = len(files)
+        logger.info("{} posts in blog folder.".format(count))
         return count
 
     def _blog_exists(self):
