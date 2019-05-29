@@ -230,6 +230,10 @@ class BlogBuilder(SteemReader):
         return files
 
     def _copy_files(self, src_dir, dst_dir):
+        if not os.path.exists(src_dir):
+            return
+        if not os.path.exists(dst_dir):
+            os.makedirs(dst_dir)
         for f in self.list_all_posts(src_dir):
             shutil.copyfile(os.path.join(src_dir, f), os.path.join(dst_dir, f))
 
