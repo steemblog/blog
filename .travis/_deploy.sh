@@ -24,8 +24,6 @@ if [ -d public ]; then
     cd ../source
 
     if [ -d .git ]; then
-      git branch
-      git log
       git push -q origin source
     fi
 
