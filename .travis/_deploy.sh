@@ -8,13 +8,27 @@ set -e
 git config --global user.email "${GIT_EMAIL}"
 git config --global user.name "${GIT_USERNAME}"
 
-git clone --depth 1 --branch master --single-branch https://${GITHUB_PAT}@github.com/${BLOG_REPO}.git site
-cd site
-cp -r ../public/* ./
+if [ -d public ]; then
 
-NOW=$(date +"%Y-%m-%d %H:%M:%S %z")
-git add --all *
-git commit -m "Site updated: ${NOW}" || true
-git push -q origin master
+    # deploy site to repo
+    git clone --depth 1 --branch master --single-branch https://${GITHUB_PAT}@github.com/${BLOG_REPO}.git site
+    cd site
+    cp -r ../public/* ./
 
-cd ..
+    NOW=$(date +"%Y-%m-%d %H:%M:%S %z")
+    git add --all *
+    git commit -m "Site updated: ${NOW}" || true
+    git push -q origin master
+
+    # save source to repo
+    cd ../source
+
+    if [ -d .git ]; then
+      NOW=$(date +"%Y-%m-%d %H:%M:%S %z")
+      git commit -m "Source updated: ${NOW}" || true
+      git push -q origin source || true
+    fi
+
+    cd ..
+
+fi

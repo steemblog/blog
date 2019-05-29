@@ -11,7 +11,6 @@ install:
 script:
   - travis_wait 60 bash .travis/_build.sh
   - bash .travis/_deploy.sh
-  - bash .travis/_save.sh
 
 branches:
   only:
