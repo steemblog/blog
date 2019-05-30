@@ -32,7 +32,7 @@ def download(ctx, account=None, tag=None, days=None, host="github", debug=False,
     days = days or settings.get_env_var("DURATION")
 
     clean_build = settings.get_env_var("CLEAN_BUILD")
-    if clean_build and bool(clean_build) == True:
+    if clean_build and clean_build.lower() == "true":
         incremental = False
     else:
         incremental = production
