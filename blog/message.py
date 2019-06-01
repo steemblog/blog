@@ -148,7 +148,14 @@ deploy:
   branch: gh-pages
 
 marked:
-  gfm: false
+  gfm: true
+  pedantic: false
+  sanitize: false
+  tables: true
+  breaks: true
+  smartLists: true
+  smartypants: true
+  autolink: true
 
 githubEmojis:
   className: not-gallery-item
