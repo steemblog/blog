@@ -101,6 +101,11 @@ def build(ctx, debug=False):
 def build_all(ctx, accounts=None, host="github", debug=False, production=False):
     """ download the posts of all the accounts, and generate pages """
 
+    if not debug:
+        debug_setting = settings.get_env_var("DEBUG")
+        if debug_setting and debug_setting.lower() == "true":
+            debug = True
+
     accounts = accounts or settings.get_env_var("STEEM_ACCOUNTS") or []
     if accounts and len(accounts) > 0:
         if production:
