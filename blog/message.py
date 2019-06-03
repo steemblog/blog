@@ -27,7 +27,7 @@ FOOTERS = {}
 
 MESSAGES["blog"] = """
 ---
-title: "{title}"
+title: '{title}'
 permlink: {permlink}
 catalog: true
 toc_nav_num: true
