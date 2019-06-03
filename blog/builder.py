@@ -70,7 +70,7 @@ class BlogBuilder(SteemReader):
         c = SteemComment(comment=post)
 
         # retrieve necessary data from steem
-        title = post.title.replace('"', '')
+        title = post.title.replace('"', '').replace('\\', '\\\\')
         permlink = post["permlink"]
         body = c.get_compatible_markdown()
         date_str = post.json()["created"]
