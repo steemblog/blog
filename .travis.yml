@@ -9,7 +9,7 @@ install:
   - bash .travis/_install.sh
 
 script:
-  - travis_wait 60 bash .travis/_build.sh
+  - bash .travis/_build.sh
   - bash .travis/_deploy.sh
 
 branches:
