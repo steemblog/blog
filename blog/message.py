@@ -162,6 +162,8 @@ githubEmojis:
 
 all_minifier: false
 
+disable_tag_plugins: true
+
 incremental: {incremental}
 """
 
