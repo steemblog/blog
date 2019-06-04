@@ -30,15 +30,20 @@ def download(ctx, account=None, tag=None, days=None, host="github", debug=False,
     account = account or settings.get_env_var("STEEM_ACCOUNT")
     tag = tag or settings.get_env_var("STEEM_TAG")
     days = days or settings.get_env_var("DURATION")
-
     clean_build = settings.get_env_var("CLEAN_BUILD")
+
     if clean_build and clean_build.lower() == "true":
+        clean_build = True
+    else:
+        clean_build = False
+
+    if clean_build:
         incremental = False
     else:
         incremental = production
 
     builder = BlogBuilder(account=account, tag=tag, days=days, host=host)
-    if production:
+    if production and not clean_build:
         builder.set_smart_duration()
     builder.update_config(incremental=incremental)
 
