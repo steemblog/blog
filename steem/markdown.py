@@ -102,3 +102,11 @@ class SteemMarkdown:
         text = self.text
         text = re.sub(r"(?P<url>" + REGEX_IMAGE_URL + r")(?P<space>\s+)", r"![](\g<url>)\g<space>", text)
         return text
+
+    def find_elements(self, selector):
+        body = self.get_steem_markdown()
+        # md -> html -> text since BeautifulSoup can extract text cleanly
+        html = markdown(body)
+        # extract links
+        soup = BeautifulSoup(html, "html.parser")
+        return soup.select(selector)

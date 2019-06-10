@@ -4,9 +4,11 @@ import os
 import shutil
 import subprocess
 import requests
+import traceback
 
 from steem.comment import SteemComment
 from steem.account import SteemAccount
+from steem.markdown import SteemMarkdown
 from steem.settings import settings, STEEM_HOST
 from data.reader import SteemReader
 from utils.logging.logger import logger
@@ -26,6 +28,9 @@ HEXO_SOURCE_FOLDER = "source"
 SOURCE_REPO_FOLDER = ".source"
 POSTS_FOLDER = "_posts"
 BLOG_CONTENT_FOLDER = "./{}/{}".format(HEXO_SOURCE_FOLDER, POSTS_FOLDER)
+
+POSITION_TAG_SELECTOR = 'div[position]'
+DEFAULT_POSITION = 9999
 
 
 class BlogBuilder(SteemReader):
@@ -65,6 +70,16 @@ class BlogBuilder(SteemReader):
         self.folder_created = True
         return self.blog_folder
 
+    def _get_position(self, body):
+        try:
+            elements = SteemMarkdown(body).find_elements(POSITION_TAG_SELECTOR)
+            if elements and len(elements) > 0:
+                position = elements[0].get("position")
+                return int(position)
+        except:
+            logger.error("Failed when getting position tag.\nError: {}".format(traceback.format_exc()))
+        return DEFAULT_POSITION
+
     def _write_content(self, post):
         folder = self._get_content_folder()
         c = SteemComment(comment=post)
@@ -73,6 +88,7 @@ class BlogBuilder(SteemReader):
         title = post.title.replace("'", "''")
         permlink = post["permlink"]
         body = c.get_compatible_markdown()
+        position = self._get_position(body)
         date_str = post.json()["created"]
         date = date_str.replace('T', ' ')
         tags = "\n".join(["- {}".format(tag) for tag in c.get_tags()])
@@ -82,7 +98,8 @@ class BlogBuilder(SteemReader):
 
         # build content with template
         template = get_message("blog", footer=True)
-        content = template.format(title=title, permlink=permlink, date=date,
+        content = template.format(title=title, permlink=permlink,
+                                  position=position, date=date,
                                   tags=tags, category=category,
                                   thumbnail=thumbnail, body=body, url=url)
 
