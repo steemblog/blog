@@ -32,6 +32,7 @@ permlink: {permlink}
 catalog: true
 toc_nav_num: true
 toc: true
+position: {position}
 date: {date}
 categories:
 - {category}
@@ -123,6 +124,7 @@ pagination_dir: page
 
 index_generator:
   per_page: 6
+  order_by: position -date
 
 archive_generator:
   per_page: 20
