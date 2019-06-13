@@ -100,7 +100,10 @@ class SteemMarkdown:
 
     def get_steem_markdown(self):
         text = self.text
+        # convert the raw image URL into markdown image tag
         text = re.sub(r"(?P<url>" + REGEX_IMAGE_URL + r")(?P<space>\s+)", r"![](\g<url>)\g<space>", text)
+        # add an extra new line beofre the table head to render successfully
+        text = re.sub(r"(?P<previous>[^|\s]+\s*[^|\n])\n\|", r"\g<previous>\n\n|", text)
         return text
 
     def find_elements(self, selector):
