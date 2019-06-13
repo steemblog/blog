@@ -80,12 +80,17 @@ class BlogBuilder(SteemReader):
             logger.error("Failed when getting position tag.\nError: {}".format(traceback.format_exc()))
         return DEFAULT_POSITION
 
+    def _yaml_compatible(self, item):
+        if item and len(item) > 0:
+            return "'{}'".format(item.replace("'", "''"))
+        return item
+
     def _write_content(self, post):
         folder = self._get_content_folder()
         c = SteemComment(comment=post)
 
         # retrieve necessary data from steem
-        title = post.title.replace("'", "''")
+        title = self._yaml_compatible(post.title)
         permlink = post["permlink"]
         body = c.get_compatible_markdown()
         position = self._get_position(body)
@@ -93,7 +98,7 @@ class BlogBuilder(SteemReader):
         date = date_str.replace('T', ' ')
         tags = "\n".join(["- {}".format(tag) for tag in c.get_tags()])
         category = c.get_tags()[0]
-        thumbnail = c.get_pic_url() or ''
+        thumbnail = self._yaml_compatible(c.get_pic_url()) or ''
         url = c.get_url()
 
         # build content with template
@@ -149,11 +154,11 @@ class BlogBuilder(SteemReader):
 
         a = SteemAccount(self.account)
         author = self.account
-        name = a.get_profile("name") or ""
-        avatar = a.avatar() or ""
+        name = self._yaml_compatible(a.get_profile("name")) or ""
+        avatar = self._yaml_compatible(a.avatar()) or ""
         # about = a.get_profile("about") or ""
-        location = a.get_profile("location") or ""
-        website = a.get_profile("website") or ""
+        location = self._yaml_compatible(a.get_profile("location")) or ""
+        website = self._yaml_compatible(a.get_profile("website")) or ""
         incremental = "true" if incremental else "false"
 
         # build config file with template

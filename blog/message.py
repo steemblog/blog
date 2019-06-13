@@ -27,7 +27,7 @@ FOOTERS = {}
 
 MESSAGES["blog"] = """
 ---
-title: '{title}'
+title: {title}
 permlink: {permlink}
 catalog: true
 toc_nav_num: true
@@ -312,7 +312,7 @@ widgets:
                 url: 'http://steemit.com/@{author}'
             Website:
                 icon: fa fa-home
-                url: '{website}'
+                url: {website}
         # Cache the widget or not, true or false
         cache: true
         # Render the widget as a component
