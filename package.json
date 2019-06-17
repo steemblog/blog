@@ -3,11 +3,11 @@
   "version": "0.0.0",
   "private": true,
   "hexo": {
-    "version": "3.8.0"
+    "version": "3.9.0"
   },
   "dependencies": {
     "clean-css": "^4.2.1",
-    "hexo": "github:think-in-universe/hexo#master",
+    "hexo": "^3.9.0",
     "hexo-all-minifier": "^0.5.3",
     "hexo-deployer-git": "^0.3.1",
     "hexo-filter-github-emojis": "^2.0.0",
@@ -20,7 +20,7 @@
     "hexo-renderer-marked": "^0.2.10",
     "hexo-renderer-stylus": "^0.3.1",
     "hexo-server": "^0.2.0",
-    "hexo-stop-tag-plugins": "^0.1.5",
+    "hexo-stop-tag-plugins": "^0.1.7",
     "uglify-es": "^3.3.9"
   }
 }
