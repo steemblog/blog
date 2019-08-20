@@ -67,6 +67,7 @@ class Settings:
                 node=api_node,
                 # bundle=True, # Enable bundle broadcast
                 # nobroadcast=True, # Enable this for testing
+                use_condenser=True,
                 keys=self._get_steem_keys(),
             )
             # Set stm as shared instance
