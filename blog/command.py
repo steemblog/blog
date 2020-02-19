@@ -2,6 +2,7 @@
 
 import os, time, random
 from invoke import task
+import traceback
 
 from utils.logging.logger import logger
 from steem.settings import settings
@@ -116,10 +117,14 @@ def build_all(ctx, accounts=None, host="github", debug=False, production=False):
         if production:
             setup(ctx)
         for account in accounts.split(","):
-            clean(ctx)
-            count = download(ctx, account=account, host=host, debug=debug, production=production)
-            if count > 0:
-                build(ctx, debug)
+            try:
+                logger.info("Start generating pages for account @{} ...".format(account))
+                clean(ctx)
+                count = download(ctx, account=account, host=host, debug=debug, production=production)
+                if count > 0:
+                    build(ctx, debug)
+            except:
+                logger.error("Failed when generating pages for account @{}.\nError: {}".format(account, traceback.format_exc()))
 
 
 @task(help={
